@@ -78,7 +78,7 @@
     </table>
 
     <div id="stats" style="display:none;">
-        <h3>전체 통계 (3명 기준)</h3>
+        <h3>전체 통계</h3>
         <p id="avgDisplay"></p>
         <p id="topStudentDisplay"></p>
     </div>
@@ -87,19 +87,16 @@
         var students = [];
 
         function addStudent() {
-            // 1. 입력값 가져오기 [cite: 1513]
             var name = document.getElementById('name').value;
             var kor = document.getElementById('kor').value;
             var eng = document.getElementById('eng').value;
             var math = document.getElementById('math').value;
 
-            // 7. 빈 값 체크 및 경고창 
             if (!name || !kor || !eng || !math) {
                 alert("모든 필드를 입력해주세요.");
                 return;
             }
 
-            // 데이터 객체 생성 (숫자로 변환)
             var student = {
                 name: name,
                 kor: parseInt(kor),
@@ -107,19 +104,16 @@
                 math: parseInt(math)
             };
 
-            // 2. 학생 목록 추가 [cite: 1514]
             students.push(student);
             renderList();
             clearInputs();
 
-            // 3. 3명 추가 시 계산 실행 
             if (students.length === 3) {
                 calculateStats();
             }
         }
 
         function getGrade(avg) {
-            // 4. 평균별 등급 설정 [cite: 1516]
             if (avg >= 90) return 'A';
             if (avg >= 80) return 'B';
             if (avg >= 70) return 'C';
@@ -166,11 +160,9 @@
                 }
             }
 
-            // 5. 전체 평균 출력 
             var overallAvg = (totalSum / students.length).toFixed(2);
             document.getElementById('avgDisplay').innerText = "전체 학생 평균: " + overallAvg + "점";
 
-            // 6. 최고점 학생 출력 
             document.getElementById('topStudentDisplay').innerText = "최고 평균 학생: " + topStudent;
             document.getElementById('stats').style.display = "block";
         }
