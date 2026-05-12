@@ -1,0 +1,187 @@
+<!DOCTYPE html>
+<html lang="ko">
+
+<head>
+    <meta charset="UTF-8">
+    <title>학생 성적 관리 프로그램</title>
+    <style>
+        body {
+            font-family: sans-serif;
+            padding: 20px;
+        }
+
+        .input-group {
+            margin-bottom: 10px;
+        }
+
+        label {
+            display: inline-block;
+            width: 80px;
+        }
+
+        table {
+            border-collapse: collapse;
+            width: 100%;
+            margin-top: 20px;
+        }
+
+        th,
+        td {
+            border: 1px solid #ddd;
+            padding: 8px;
+            text-align: center;
+        }
+
+        th {
+            background-color: #f4f4f4;
+        }
+
+        #stats {
+            margin-top: 20px;
+            padding: 15px;
+            background-color: #e9ecef;
+            border-radius: 5px;
+        }
+    </style>
+</head>
+
+<body>
+
+    <h2>학생 정보 입력</h2>
+    <div class="input-group">
+        <label>이름:</label> <input type="text" id="name">
+    </div>
+    <div class="input-group">
+        <label>국어점수:</label> <input type="number" id="kor">
+    </div>
+    <div class="input-group">
+        <label>영어점수:</label> <input type="number" id="eng">
+    </div>
+    <div class="input-group">
+        <label>수학점수:</label> <input type="number" id="math">
+    </div>
+    <button onclick="addStudent()">학생 추가</button>
+
+    <table id="studentTable">
+        <thead>
+            <tr>
+                <th>이름</th>
+                <th>국어</th>
+                <th>영어</th>
+                <th>수학</th>
+                <th>총점</th>
+                <th>평균</th>
+                <th>등급</th>
+            </tr>
+        </thead>
+        <tbody id="studentList"></tbody>
+    </table>
+
+    <div id="stats" style="display:none;">
+        <h3>전체 통계 (3명 기준)</h3>
+        <p id="avgDisplay"></p>
+        <p id="topStudentDisplay"></p>
+    </div>
+
+    <script>
+        var students = [];
+
+        function addStudent() {
+            // 1. 입력값 가져오기 [cite: 1513]
+            var name = document.getElementById('name').value;
+            var kor = document.getElementById('kor').value;
+            var eng = document.getElementById('eng').value;
+            var math = document.getElementById('math').value;
+
+            // 7. 빈 값 체크 및 경고창 
+            if (!name || !kor || !eng || !math) {
+                alert("모든 필드를 입력해주세요.");
+                return;
+            }
+
+            // 데이터 객체 생성 (숫자로 변환)
+            var student = {
+                name: name,
+                kor: parseInt(kor),
+                eng: parseInt(eng),
+                math: parseInt(math)
+            };
+
+            // 2. 학생 목록 추가 [cite: 1514]
+            students.push(student);
+            renderList();
+            clearInputs();
+
+            // 3. 3명 추가 시 계산 실행 
+            if (students.length === 3) {
+                calculateStats();
+            }
+        }
+
+        function getGrade(avg) {
+            // 4. 평균별 등급 설정 [cite: 1516]
+            if (avg >= 90) return 'A';
+            if (avg >= 80) return 'B';
+            if (avg >= 70) return 'C';
+            if (avg >= 60) return 'D';
+            return 'F';
+        }
+
+        function renderList() {
+            var listBody = document.getElementById('studentList');
+            listBody.innerHTML = "";
+
+            for (var i = 0; i < students.length; i++) {
+                var s = students[i];
+                var total = s.kor + s.eng + s.math;
+                var avg = (total / 3).toFixed(2);
+                var grade = getGrade(avg);
+
+                var row = "<tr>" +
+                    "<td>" + s.name + "</td>" +
+                    "<td>" + s.kor + "</td>" +
+                    "<td>" + s.eng + "</td>" +
+                    "<td>" + s.math + "</td>" +
+                    "<td>" + (students.length >= 3 ? total : "-") + "</td>" +
+                    "<td>" + (students.length >= 3 ? avg : "-") + "</td>" +
+                    "<td>" + (students.length >= 3 ? grade : "-") + "</td>" +
+                    "</tr>";
+                listBody.innerHTML += row;
+            }
+        }
+
+        function calculateStats() {
+            var totalSum = 0;
+            var maxAvg = -1;
+            var topStudent = "";
+
+            for (var i = 0; i < students.length; i++) {
+                var s = students[i];
+                var avg = (s.kor + s.eng + s.math) / 3;
+                totalSum += avg;
+
+                if (avg > maxAvg) {
+                    maxAvg = avg;
+                    topStudent = s.name;
+                }
+            }
+
+            // 5. 전체 평균 출력 
+            var overallAvg = (totalSum / students.length).toFixed(2);
+            document.getElementById('avgDisplay').innerText = "전체 학생 평균: " + overallAvg + "점";
+
+            // 6. 최고점 학생 출력 
+            document.getElementById('topStudentDisplay').innerText = "최고 평균 학생: " + topStudent;
+            document.getElementById('stats').style.display = "block";
+        }
+
+        function clearInputs() {
+            document.getElementById('name').value = "";
+            document.getElementById('kor').value = "";
+            document.getElementById('eng').value = "";
+            document.getElementById('math').value = "";
+        }
+    </script>
+</body>
+
+</html>
